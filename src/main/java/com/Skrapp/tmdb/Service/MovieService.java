@@ -2,6 +2,8 @@ package com.Skrapp.tmdb.Service;
 
 import com.Skrapp.tmdb.Repo.MovieRepository;
 
+import com.Skrapp.tmdb.exception.InvalidDataException;
+import com.Skrapp.tmdb.exception.NotFoundException;
 import com.Skrapp.tmdb.model.Movie;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,19 +18,21 @@ public class MovieService {
     //CRUD
 
     public Movie create(Movie movie){
-           if (movie == null) throw new RuntimeException("Invalid movie");
+           if (movie == null) {
+               throw new InvalidDataException("Invalid movie: null");
+           }
         return movieRepository.save(movie);
     }
 
     public Movie read(Long id) {
 
         return movieRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Movie not found"));
+                .orElseThrow(() -> new NotFoundException("Movie not found with Id:" +id));
 
     }
     public void update(Long id, Movie update){
         if (update == null || id == null){
-            throw  new RuntimeException("Invalid movie");
+            throw  new InvalidDataException("Invalid movie: null");
         }
         // check if exists?
         if(movieRepository.existsById(id)){
@@ -38,7 +42,7 @@ public class MovieService {
             movie.setActors(update.getActors());
             movieRepository.save(movie);
         } else
-            throw new RuntimeException("Cannot update: Movie with ID not found.");
+            throw new NotFoundException("Movie not found with Id:" +id);
     }
 
     public void delete(Long id) {
@@ -46,7 +50,7 @@ public class MovieService {
             movieRepository.deleteById(id);
             }
              else
-                 throw new RuntimeException("Cannot update: Movie with ID " + id + " not found.");
+                 throw new NotFoundException("Cannot delete: Movie with ID " + id + " not found.");
          }
 
 }

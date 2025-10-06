@@ -19,6 +19,7 @@ public class Movie {
     private Long id;
     private String name;
     private String director;
+    private String singer;
     @ElementCollection
     private List<String> actors = new ArrayList<>();
 
